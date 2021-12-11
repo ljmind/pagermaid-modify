@@ -5,9 +5,28 @@ from sys import platform
 
 from pyrogram import Client, __version__
 
+from getpass import getuser
+from socket import gethostname
+from time import time
+from psutil import boot_time, virtual_memory, disk_partitions
+from shutil import disk_usage
+from subprocess import Popen, PIPE
+
 from pagermaid import start_time, Config
 from pagermaid.listener import listener
-from pagermaid.utils import lang, Message
+from pagermaid.utils import lang, Message, execute
+
+
+@listener(is_plugin=False, command="sysinfo",
+          description=lang('sysinfo_des'))
+async def sysinfo(client: Client, message: Message):
+    """ Retrieve system information via neofetch. """
+    await message.edit("加载系统信息中 . . .")
+    if platform == 'win32':
+        await message.edit(neofetch_win(), parse_mode='html')
+        return
+    result = await execute("neofetch --config none --stdout")
+    await message.edit(f"`{result}`")
 
 
 @listener(is_plugin=False, command="status",
@@ -46,3 +65,116 @@ async def status(client: Client, message: Message):
             f"{lang('status_uptime')}: `{uptime}`"
             )
     await message.edit(text)
+
+
+@listener(is_plugin=False, command="ping",
+          description=lang('ping_des'))
+async def ping(client: Client, message: Message):
+    """ Calculates latency between PagerMaid and Telegram. """
+    await client.get_users("chainwon_c")
+    start = datetime.now()
+    await message.edit("Pong!")
+    end = datetime.now()
+    duration = (end - start).microseconds / 1000
+    await message.edit(f"Pong!|{duration}")
+
+
+def wmic(command: str):
+    """ Fetch the wmic command to cmd """
+    try:
+        p = Popen(command.split(" "), stdout=PIPE)
+    except FileNotFoundError:
+        print("WMIC.exe was not found... Make sure 'C:\Windows\System32\wbem' is added to PATH.")
+
+    stdout, stderror = p.communicate()
+
+    output = stdout.decode("gbk", "ignore")
+    lines = output.split("\r\r")
+    lines = [g.replace("\n", "").replace("  ", "") for g in lines if len(g) > 2]
+    return lines
+
+
+def get_uptime():
+    """ Get the device uptime """
+    delta = round(time() - boot_time())
+
+    hours, remainder = divmod(int(delta), 3600)
+    minutes, seconds = divmod(remainder, 60)
+    days, hours = divmod(hours, 24)
+
+    def includeS(text: str, num: int):
+        return f"{num} {text}{'' if num == 1 else 's'}"
+
+    d = includeS("day", days)
+    h = includeS("hour", hours)
+    m = includeS("minute", minutes)
+    s = includeS("second", seconds)
+
+    if days:
+        output = f"{d}, {h}, {m} and {s}"
+    elif hours:
+        output = f"{h}, {m} and {s}"
+    elif minutes:
+        output = f"{m} and {s}"
+    else:
+        output = s
+
+    return output
+
+
+def readable(num, suffix='B'):
+    """ Convert Bytes into human readable formats """
+    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
+        if abs(num) < 1024.0:
+            return "%3.1f%s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f%s%s" % (num, 'Yi', suffix)
+
+
+def get_ram():
+    """ Get RAM used/free/total """
+    ram = virtual_memory()
+    used = readable(ram.used)
+    total = readable(ram.total)
+
+    percent_used = round(ram.used / ram.total * 100, 2)
+
+    return f"{used} / {total} ({percent_used}%)"
+
+
+def partitions():
+    """ Find the disk partitions on current OS """
+    parts = disk_partitions()
+    listparts = []
+
+    for g in parts:
+        try:
+            total, used, free = disk_usage(g.device)
+            percent_used = round(used / total * 100, 2)
+            listparts.append(f"      {g.device[:2]} {readable(used)} / {readable(total)} ({percent_used}%)")
+        except PermissionError:
+            continue
+
+    return listparts
+
+
+def neofetch_win():
+    user_name = getuser()
+    host_name = gethostname()
+    os = wmic("wmic os get Caption")[-1].replace("Microsoft ", "")
+    uptime = get_uptime()
+    mboard_name = wmic("wmic baseboard get Manufacturer")
+    mboard_module = wmic("wmic baseboard get product")
+    try:
+        mboard = f"{mboard_name[-1]} ({mboard_module[-1]})"
+    except IndexError:
+        mboard = "Unknown..."
+    cpu = wmic("wmic cpu get name")[-1]
+    gpu = wmic("wmic path win32_VideoController get name")
+    gpu = [f'     {g.strip()}' for g in gpu[1:]][0].strip()
+    ram = get_ram()
+    disks = '\n'.join(partitions())
+    text = f'<code>{user_name}@{host_name}\n---------\nOS: {os}\nUptime: {uptime}\n' \
+           f'Motherboard: {mboard}\nCPU: {cpu}\nGPU: {gpu}\nMemory: {ram}\n' \
+           f'Disk:\n{disks}</code>'
+    return text

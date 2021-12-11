@@ -17,7 +17,6 @@ for module_name in module_list:
     try:
         import_module("pagermaid.modules." + module_name)
     except BaseException as exception:
-        raise exception
         logs.info(f"{lang('module')} {module_name} {lang('error')}: {type(exception)}: {exception}")
 for plugin_name in plugin_list:
     try:
