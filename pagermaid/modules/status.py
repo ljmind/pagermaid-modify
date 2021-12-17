@@ -71,7 +71,6 @@ async def status(client: Client, message: Message):
           description=lang('ping_des'))
 async def ping(client: Client, message: Message):
     """ Calculates latency between PagerMaid and Telegram. """
-    await client.get_users("chainwon_c")
     start = datetime.now()
     await message.edit("Pong!")
     end = datetime.now()
