@@ -5,7 +5,7 @@ web_KeyError: Oops ~ Web interface configuration is missing in the config file.
 PhoneNumberInvalidError: Oops ~ The phone number entered is invalid. Please make sure to append country code.
 module: module
 error: loading error
-start: PagerMaid-Modify have started, type -help in any chat for help message.
+start: PagerMaid-Modify have started, type ,help in any chat for help message.
 # utils
 msg_ValueError: Oops ~ No messages were successfully obtained!
 isinstance: Oops ~ Length must be an integer!
@@ -384,7 +384,7 @@ status_name: Host name
 status_platform: Host platform
 status_release: Kernel version
 status_python: Python version
-status_telethon: Telethon version
+status_pyrogram: Pyrogram version
 status_db: Database status
 status_uptime: Uptime
 # stats

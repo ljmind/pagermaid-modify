@@ -66,7 +66,7 @@ async def help_raw_command(client: Client, message: Message):
         for command in sorted(help_messages, reverse=False):
             result += "`" + str(command)
             result += "`, "
-        await message.edit(result[:-2] + f"\n**{lang('help_send')} \"-help <{lang('command')}>\" {lang('help_see')}** "
+        await message.edit(result[:-2] + f"\n**{lang('help_send')} \",help <{lang('command')}>\" {lang('help_see')}** "
                                          f"[{lang('help_source')}](https://t.me/PagerMaid_Modify)",
                            disable_web_page_preview=True)
 

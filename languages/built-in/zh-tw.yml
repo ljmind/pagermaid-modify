@@ -5,7 +5,7 @@ web_KeyError: Error！設定檔缺少Web介面配置。
 PhoneNumberInvalidError: Error！電話號碼無效，請確定添加了國家/地區代碼。
 module: 模組
 error: 載入錯誤
-start: PagerMaid-Modify 已經啟動，在任何聊天室輸入 -help 取得說明。
+start: PagerMaid-Modify 已經啟動，在任何聊天室輸入 ,help 取得說明。
 # utils
 msg_ValueError: Error！沒有成功獲取訊息！
 isinstance: Error！長度必須是整數!
@@ -384,7 +384,7 @@ status_name: 主機名
 status_platform: 主機平台
 status_release: Kernel版本
 status_python: Python版本
-status_telethon: Telethon版本
+status_pyrogram: Pyrogram版本
 status_db: 數據庫狀態
 status_uptime: 運行時間
 # stats

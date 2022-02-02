@@ -6,7 +6,7 @@ web_KeyError: 出错了呜呜呜 ~ 配置文件中缺少 Web 界面配置。
 PhoneNumberInvalidError: 出错了呜呜呜 ~ 输入的电话号码无效。 请确保附加国家代码。
 module: 模块
 error: 加载出错
-start: PagerMaid-Modify 已启动，在任何聊天中输入 -help 以获得帮助消息。
+start: PagerMaid-Modify 已启动，在任何聊天中输入 ,help 以获得帮助消息。
 
 # utils
 msg_ValueError: 出错了呜呜呜 ~ 没有成功获取到消息！
@@ -399,7 +399,7 @@ status_name: 主机名
 status_platform: 主机平台
 status_release: Kernel 版本
 status_python: Python 版本
-status_telethon: Telethon 版本
+status_pyrogram: Pyrogram 版本
 status_db: 数据库状态
 status_uptime: 运行时间
 ## stats
