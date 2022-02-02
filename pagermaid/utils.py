@@ -1,6 +1,11 @@
+import subprocess
+from importlib.util import find_spec
+from os.path import exists
+from typing import Optional
+
 import httpx
 from os import remove
-from sys import platform
+from sys import executable
 from asyncio import create_subprocess_shell
 from asyncio.subprocess import PIPE
 
@@ -94,6 +99,18 @@ async def execute(command, pass_error=True):
         except UnicodeDecodeError:
             result = str(stdout.decode('gbk').strip())
     return result
+
+
+def pip_install(package: str, version: Optional[str] = "", alias: Optional[str] = "") -> bool:
+    """ Auto install extra pypi packages """
+    if not alias:
+        # when import name is not provided, use package name
+        alias = package
+    if find_spec(alias) is None:
+        subprocess.call([executable, "-m", "pip", "install", f"{package}{version}"])
+        if find_spec(package) is None:
+            return False
+    return True
 
 
 """ Init httpx client """

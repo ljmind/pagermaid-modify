@@ -7,3 +7,4 @@ PyYAML>=6.0
 coloredlogs>=15.0.1
 psutil>=5.8.0
 httpx
+apscheduler>=3.8.1

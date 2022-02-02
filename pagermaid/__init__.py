@@ -2,6 +2,7 @@ from coloredlogs import ColoredFormatter
 from logging import getLogger, StreamHandler, ERROR, INFO, basicConfig
 from datetime import datetime
 from os import getcwd
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from pagermaid.config import Config
 import pyromod.listen
@@ -11,6 +12,10 @@ CMD_LIST = {}
 module_dir = __path__[0]
 working_dir = getcwd()
 help_messages = {}
+scheduler = AsyncIOScheduler()
+if not scheduler.running:
+    scheduler.configure(timezone="Asia/ShangHai")
+    scheduler.start()
 logs = getLogger(__name__)
 logging_format = "%(levelname)s [%(asctime)s] [%(name)s] %(message)s"
 logging_handler = StreamHandler()
