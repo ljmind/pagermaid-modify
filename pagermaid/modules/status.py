@@ -4,6 +4,7 @@ from platform import uname, python_version
 from sys import platform
 
 from pyrogram import Client, __version__
+from pyrogram.raw.functions import Ping
 
 from getpass import getuser
 from socket import gethostname
@@ -72,10 +73,14 @@ async def status(client: Client, message: Message):
 async def ping(client: Client, message: Message):
     """ Calculates latency between PagerMaid and Telegram. """
     start = datetime.now()
+    await client.send(Ping(ping_id=0))
+    end = datetime.now()
+    ping_duration = (end - start).microseconds / 1000
+    start = datetime.now()
     await message.edit("Pong!")
     end = datetime.now()
-    duration = (end - start).microseconds / 1000
-    await message.edit(f"Pong!|{duration}")
+    msg_duration = (end - start).microseconds / 1000
+    await message.edit(f"Pong!| PING: {ping_duration} | MSG: {msg_duration}")
 
 
 def wmic(command: str):
