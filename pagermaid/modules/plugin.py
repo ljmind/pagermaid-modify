@@ -38,15 +38,9 @@ async def download(name):
 
 
 def move_plugin(file_path):
+    name = path.basename(file_path)[:-3]
     plugin_directory = f"{working_dir}{sep}plugins{sep}"
-    try:
-        remove(f"{plugin_directory}{file_path}")
-    except FileNotFoundError:
-        pass
-    try:
-        remove(f"{plugin_directory}{file_path}.disabled")
-    except FileNotFoundError:
-        pass
+    remove_plugin(name)
     move(file_path, plugin_directory)
 
 

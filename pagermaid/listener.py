@@ -114,7 +114,7 @@ def listener(**args):
                              f"# ChatID: {message.chat.id}. \n" \
                              f"# UserID: {message.from_user.id if message.from_user else message.sender_chat.id}. \n" \
                              f"# Message: \n-----BEGIN TARGET MESSAGE-----\n" \
-                             f"{message.text}\n-----END TARGET MESSAGE-----\n" \
+                             f"{message.text if message.text else message.caption}\n-----END TARGET MESSAGE-----\n" \
                              f"# Traceback: \n-----BEGIN TRACEBACK-----\n" \
                              f"{str(exc_format)}\n-----END TRACEBACK-----\n" \
                              f"# Error: \"{str(exc_info)}\". \n"
