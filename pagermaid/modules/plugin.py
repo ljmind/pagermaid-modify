@@ -139,22 +139,24 @@ async def plugin(__: Client, context: Message):
         if len(context.parameter) == 2:
             if exists(f"{plugin_directory}{context.parameter[1]}.py"):
                 remove(f"{plugin_directory}{context.parameter[1]}.py")
-                with open(f"{plugin_directory}version.json", 'r', encoding="utf-8") as f:
-                    version_json = json.load(f)
-                version_json[context.parameter[1]] = '0.0'
-                with open(f"{plugin_directory}version.json", 'w') as f:
-                    json.dump(version_json, f)
+                if exists(f"{plugin_directory}version.json"):
+                    with open(f"{plugin_directory}version.json", 'r', encoding="utf-8") as f:
+                        version_json = json.load(f)
+                    version_json[context.parameter[1]] = '0.0'
+                    with open(f"{plugin_directory}version.json", 'w') as f:
+                        json.dump(version_json, f)
                 result = await context.edit(
                     f"{lang('apt_remove_success')} {context.parameter[1]}, {lang('apt_reboot')} ")
                 await log(f"{lang('apt_remove')} {context.parameter[1]}.")
                 exit(1)
             elif exists(f"{plugin_directory}{context.parameter[1]}.py.disabled"):
                 remove(f"{plugin_directory}{context.parameter[1]}.py.disabled")
-                with open(f"{plugin_directory}version.json", 'r', encoding="utf-8") as f:
-                    version_json = json.load(f)
-                version_json[context.parameter[1]] = '0.0'
-                with open(f"{plugin_directory}version.json", 'w') as f:
-                    json.dump(version_json, f)
+                if exists(f"{plugin_directory}version.json"):
+                    with open(f"{plugin_directory}version.json", 'r', encoding="utf-8") as f:
+                        version_json = json.load(f)
+                    version_json[context.parameter[1]] = '0.0'
+                    with open(f"{plugin_directory}version.json", 'w') as f:
+                        json.dump(version_json, f)
                 await context.edit(f"{lang('apt_removed_plugins')} {context.parameter[1]}.")
                 await log(f"{lang('apt_removed_plugins')} {context.parameter[1]}.")
             elif "/" in context.parameter[1]:
