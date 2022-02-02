@@ -1,7 +1,9 @@
-pyrogram>=1.2.20
-TgCrypto>=1.2.2
+pyrogram==1.4.0
+TgCrypto>=1.2.3
+pyromod
 Pillow>=8.4.0
 pytz>=2021.3
 PyYAML>=6.0
 coloredlogs>=15.0.1
 psutil>=5.8.0
+httpx

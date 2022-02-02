@@ -1,4 +1,5 @@
 import os
+from json import load as load_json
 from yaml import load, FullLoader, safe_load
 from shutil import copyfile
 from distutils.util import strtobool
@@ -33,6 +34,12 @@ class Config(object):
             print("Reading language YAML file failed")
             print(e)
             exit(1)
+        try:
+            with open("data/alias.json", encoding="utf-8") as f:
+                alias_dict = load_json(f)
+        except Exception as e:
+            print(f"Reading alias file failed：{e}")
+            alias_dict = {}
     except ValueError as e:
         print(e)
         exit(1)

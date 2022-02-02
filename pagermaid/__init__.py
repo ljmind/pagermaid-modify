@@ -4,6 +4,7 @@ from datetime import datetime
 from os import getcwd
 
 from pagermaid.config import Config
+import pyromod.listen
 from pyrogram import Client
 
 CMD_LIST = {}
@@ -30,3 +31,15 @@ elif not Config.API_HASH:
 
 start_time = datetime.utcnow()
 bot = Client("pagermaid", api_id=Config.API_ID, api_hash=Config.API_HASH, ipv6=Config.IPV6)
+
+
+async def log(message):
+    logs.info(
+        message.replace('`', '\"')
+    )
+    if not Config.LOG:
+        return
+    await bot.send_message(
+            Config.LOG_ID,
+            message
+    )

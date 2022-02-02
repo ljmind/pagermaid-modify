@@ -1,3 +1,4 @@
+import httpx
 from os import remove
 from sys import platform
 from asyncio import create_subprocess_shell
@@ -16,6 +17,11 @@ def lang(text: str) -> str:
     """ i18n """
     result = Config.lang_dict.get(text, text)
     return result
+
+
+def alias_command(command: str) -> str:
+    """ alias """
+    return Config.alias_dict.get(command, command)
 
 
 async def attach_report(plaintext, file_name, reply_id=None, caption=None):
@@ -49,27 +55,50 @@ async def attach_log(plaintext, chat_id, file_name, reply_id=None, caption=None)
     remove(file_name)
 
 
+async def upload_attachment(file_path, chat_id, reply_id, caption=None, preview=None, document=None):
+    """ Uploads a local attachment file. """
+    if not exists(file_path):
+        return False
+    try:
+        await bot.send_document(
+            chat_id,
+            file_path,
+            reply_to_message_id=reply_id,
+            caption=caption
+        )
+    except BaseException as exception:
+        raise exception
+    return True
+
+
 async def execute(command, pass_error=True):
     """ Executes command and returns output, with the option of enabling stderr. """
-    if not platform == 'win32':
-        executor = await create_subprocess_shell(
-            command,
-            stdout=PIPE,
-            stderr=PIPE,
-            stdin=PIPE
-        )
+    executor = await create_subprocess_shell(
+        command,
+        stdout=PIPE,
+        stderr=PIPE,
+        stdin=PIPE
+    )
 
-        stdout, stderr = await executor.communicate()
-        if pass_error:
+    stdout, stderr = await executor.communicate()
+    if pass_error:
+        try:
             result = str(stdout.decode().strip()) \
-                     + str(stderr.decode().strip())
-        else:
-            result = str(stdout.decode().strip())
+                    + str(stderr.decode().strip())
+        except UnicodeDecodeError:
+            result = str(stdout.decode('gbk').strip()) \
+                    + str(stderr.decode('gbk').strip())
     else:
-        import subprocess
-        subprocess.Popen('dir', shell=True)
-        sub = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-        sub.wait()
-        stdout = sub.communicate()
-        result = str(stdout[0].decode('gbk').strip())
+        try:
+            result = str(stdout.decode().strip())
+        except UnicodeDecodeError:
+            result = str(stdout.decode('gbk').strip())
     return result
+
+
+""" Init httpx client """
+# 使用自定义 UA
+headers = {
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36"
+}
+client = httpx.AsyncClient(timeout=10.0, headers=headers)

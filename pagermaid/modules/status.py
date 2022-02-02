@@ -14,14 +14,14 @@ from subprocess import Popen, PIPE
 
 from pagermaid import start_time, Config
 from pagermaid.listener import listener
-from pagermaid.utils import lang, Message, execute
+from pagermaid.utils import lang, Message, execute, alias_command
 
 
-@listener(is_plugin=False, command="sysinfo",
+@listener(is_plugin=False, command=alias_command("sysinfo"),
           description=lang('sysinfo_des'))
 async def sysinfo(client: Client, message: Message):
     """ Retrieve system information via neofetch. """
-    await message.edit("加载系统信息中 . . .")
+    await message.edit(lang("sysinfo_loading"))
     if platform == 'win32':
         await message.edit(neofetch_win(), parse_mode='html')
         return
@@ -29,7 +29,7 @@ async def sysinfo(client: Client, message: Message):
     await message.edit(f"`{result}`")
 
 
-@listener(is_plugin=False, command="status",
+@listener(is_plugin=False, command=alias_command("status"),
           description=lang('status_des'))
 async def status(client: Client, message: Message):
     # database
@@ -67,7 +67,7 @@ async def status(client: Client, message: Message):
     await message.edit(text)
 
 
-@listener(is_plugin=False, command="ping",
+@listener(is_plugin=False, command=alias_command("ping"),
           description=lang('ping_des'))
 async def ping(client: Client, message: Message):
     """ Calculates latency between PagerMaid and Telegram. """

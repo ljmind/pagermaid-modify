@@ -1,13 +1,14 @@
 """ The help module. """
 from pyrogram import Client
 
-from os import listdir
+from json import dump as json_dump
+from os import listdir, sep
 from pagermaid import help_messages, Config
-from pagermaid.utils import lang, Message
+from pagermaid.utils import lang, Message, alias_command
 from pagermaid.listener import listener
 
 
-@listener(is_plugin=False, command="help",
+@listener(is_plugin=False, command=alias_command("help"),
           description=lang('help_des'),
           parameters=f"<{lang('command')}>")
 async def help_command(client: Client, message: Message):
@@ -50,7 +51,7 @@ async def help_command(client: Client, message: Message):
                            disable_web_page_preview=True)
 
 
-@listener(is_plugin=False, command="help_raw",
+@listener(is_plugin=False, command=alias_command("help_raw"),
           description=lang('help_des'),
           parameters=f"<{lang('command')}>")
 async def help_raw_command(client: Client, message: Message):
@@ -70,7 +71,7 @@ async def help_raw_command(client: Client, message: Message):
                            disable_web_page_preview=True)
 
 
-@listener(is_plugin=False, command="lang",
+@listener(is_plugin=False, command=alias_command("lang"),
           description=lang('lang_des'))
 async def lang_change(client: Client, message: Message):
     to_lang = message.arguments
@@ -90,3 +91,47 @@ async def lang_change(client: Client, message: Message):
     else:
         await message.edit(
             f'{lang("lang_current_lang")} {Config.LANGUAGE}\n\n{lang("lang_all_lang")}{"，".join(dir__)}')
+
+
+@listener(is_plugin=False, outgoing=True, command="alias",
+          description=lang('alias_des'),
+          parameters='{list|del|set} <source> <to>')
+async def alias_commands(context):
+    source_commands = []
+    to_commands = []
+    texts = []
+    for key, value in Config.alias_dict.items():
+        source_commands.append(key)
+        to_commands.append(value)
+    if len(context.parameter) == 0:
+        await context.edit(lang('arg_error'))
+        return
+    elif len(context.parameter) == 1:
+        if not len(source_commands) == 0:
+            for i in range(0, len(source_commands)):
+                texts.append(f'`{source_commands[i]}` --> `{to_commands[i]}`')
+            await context.edit(lang('alias_list') + '\n\n' + '\n'.join(texts))
+        else:
+            await context.edit(lang('alias_no'))
+    elif len(context.parameter) == 2:
+        source_command = context.parameter[1]
+        try:
+            del Config.alias_dict[source_command]
+            with open(f"data{sep}alias.json", 'w') as f:
+                json_dump(Config.alias_dict, f)
+            result = await context.edit(lang('alias_success'))
+            exit(1)
+        except KeyError:
+            await context.edit(lang('alias_no_exist'))
+            return
+    elif len(context.parameter) == 3:
+        source_command = context.parameter[1]
+        to_command = context.parameter[2]
+        if to_command in help_messages:
+            await context.edit(lang('alias_exist'))
+            return
+        Config.alias_dict[source_command] = to_command
+        with open(f"data{sep}alias.json", 'w') as f:
+            json_dump(Config.alias_dict, f)
+        result = await context.edit(lang('alias_success'))
+        exit(1)

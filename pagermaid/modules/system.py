@@ -10,10 +10,10 @@ from pyrogram import Client
 
 from pagermaid import bot
 from pagermaid.listener import listener
-from pagermaid.utils import attach_log, execute, Message, lang
+from pagermaid.utils import attach_log, execute, Message, lang, alias_command
 
 
-@listener(is_plugin=False, command="sh",
+@listener(is_plugin=False, command=alias_command("sh"),
           description=lang('sh_des'),
           parameters=lang('sh_parameters'))
 async def sh(client: Client, message: Message):
@@ -23,7 +23,7 @@ async def sh(client: Client, message: Message):
     hostname = node()
 
     if not command:
-        await message.edit("`出错了呜呜呜 ~ 无效的参数。`")
+        await message.edit(lang('arg_error'))
         return
 
     await message.edit(
@@ -47,16 +47,16 @@ async def sh(client: Client, message: Message):
         return
 
 
-@listener(is_plugin=False, command="restart",
+@listener(is_plugin=False, command=alias_command("restart"),
           description=lang('restart_des'))
 async def restart(client: Client, message: Message):
     """ To re-execute PagerMaid. """
     if not message.text[0].isalpha():
-        await message.edit("尝试重新启动 PagerMaid-Modify Beta 。")
+        await message.edit(lang('restart_log'))
         exit()
 
 
-@listener(is_plugin=False, command="eval",
+@listener(is_plugin=False, command=alias_command("eval"),
           description=lang('eval_des'),
           parameters=lang('eval_parameters'))
 async def sh_eval(client: Client, message: Message):
@@ -64,7 +64,7 @@ async def sh_eval(client: Client, message: Message):
     try:
         cmd = message.text.split(" ", maxsplit=1)[1]
     except IndexError:
-        await message.edit('参数错误。')
+        await message.edit(lang('eval_need_dev'))
         return
     old_stderr = sys.stderr
     old_stdout = sys.stdout
